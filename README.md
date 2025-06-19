@@ -1,8 +1,7 @@
 ## Identify Dependent Services BOF
 
----
-#### What
 A `BOF` to help identify services dependent upon one another, ideally identifying which need to be stopped before a primary.
+
 ---
 
 #### Building
