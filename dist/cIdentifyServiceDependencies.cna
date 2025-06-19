@@ -1,0 +1,44 @@
+beacon_command_register(
+	"cIdentifyServiceDependencies", 
+	"Identify services dependencies.", 
+	"cIdentifyServiceDependencies SERVICE_NAME");
+
+
+alias cIdentifyServiceDependencies
+{
+	local('$handle $args $data');
+
+    if (size(@_) == 2)
+    {
+        $args = bof_pack($1, "Z", $2);
+    }
+    else
+    {
+        berror($1, "You must supply a name of a service to enumerate.");
+
+        return;
+    }
+
+	if ( barch($1) eq "x86" )
+    {
+        $handle = openf(script_resource("cIdentifyServiceDependencies.x86.o"));
+        $data   = readb($handle, -1);
+        closef($handle);
+
+        beacon_inline_execute($1, $data, "go", $args);
+    }
+    else if ( barch($1) eq "x64" )
+    {
+        $handle = openf(script_resource("cIdentifyServiceDependencies.x64.o"));
+        $data   = readb($handle, -1);
+        closef($handle);
+
+        beacon_inline_execute($1, $data, "go", $args);
+    }
+    else
+    {
+        berror($1, "The architecture of the process supplied does not match expectations");
+        
+        return;
+    }
+}
