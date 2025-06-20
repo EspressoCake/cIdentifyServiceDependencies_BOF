@@ -76,13 +76,27 @@ extern "C" void go(char* argc, int len)
     HRESULT hres = OLE32$CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
     if (FAILED(hres))
     {
-        BeaconPrintf(CALLBACK_ERROR, "CoInitializeEx has failed: %08lx", hres);
+        if (hres == RPC_E_CHANGED_MODE)
+        {
+            hres = OLE32$CoInitializeEx(NULL, COINIT_MULTITHREADED);
 
-        OLEAUT32$SysFreeString(bstrQuery);
-        OLEAUT32$SysFreeString(bWQL);
-        OLEAUT32$SysFreeString(bRoot);
+            if (FAILED(hres))
+            {
+                OLEAUT32$SysFreeString(bstrQuery);
+                OLEAUT32$SysFreeString(bWQL);
+                OLEAUT32$SysFreeString(bRoot);
 
-        return;
+                return;
+            }
+        }
+        else
+        {
+            OLEAUT32$SysFreeString(bstrQuery);
+            OLEAUT32$SysFreeString(bWQL);
+            OLEAUT32$SysFreeString(bRoot);
+
+            return;
+        }
     }
 
     hres = OLE32$CoInitializeSecurity(
